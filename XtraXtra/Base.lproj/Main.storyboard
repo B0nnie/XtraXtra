@@ -43,13 +43,13 @@
                                             <color key="textColor" red="0.0078431372550000003" green="0.81960784310000001" blue="0.67450980390000004" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bd5-By-poM">
+                                        <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bd5-By-poM">
                                             <rect key="frame" x="247" y="89" width="40" height="28"/>
                                             <state key="normal" image="thumbsUp3x">
                                                 <color key="titleColor" red="0.0078431372550000003" green="0.81960784310000001" blue="0.67450980390000004" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="btnThumbsUp:" destination="Wvm-hE-w1Z" eventType="touchUpInside" id="5op-A7-Fxi"/>
+                                                <action selector="didLike:" destination="Wvm-hE-w1Z" eventType="touchUpInside" id="5vB-NI-MU8"/>
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="5 Dislikes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="suu-Y1-2oJ">
@@ -58,13 +58,13 @@
                                             <color key="textColor" red="1" green="0.2196078431372549" blue="0.56862745098039214" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sM1-7i-0KR">
+                                        <button opaque="NO" tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sM1-7i-0KR">
                                             <rect key="frame" x="291" y="89" width="44" height="29"/>
                                             <state key="normal" image="thumbsDown3x">
                                                 <color key="titleColor" red="1" green="0.21960784310000001" blue="0.56862745100000001" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="btnThumbsDown:" destination="Wvm-hE-w1Z" eventType="touchUpInside" id="Fja-2D-b11"/>
+                                                <action selector="didDislike:" destination="Wvm-hE-w1Z" eventType="touchUpInside" id="Ai6-II-cFO"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -72,6 +72,8 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
+                                    <outlet property="btnDislikes" destination="sM1-7i-0KR" id="hso-ZT-96G"/>
+                                    <outlet property="btnLikes" destination="Bd5-By-poM" id="H5b-TY-aHH"/>
                                     <outlet property="imgViewArticle" destination="seB-VO-SoR" id="PJ1-Rp-w55"/>
                                     <outlet property="lblArticleTitle" destination="gv4-fI-Fha" id="J1D-zc-8x5"/>
                                     <outlet property="lblArticleTxt" destination="kBD-gL-lzE" id="5CI-h0-FMq"/>

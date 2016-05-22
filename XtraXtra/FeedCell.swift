@@ -8,7 +8,10 @@
 //
 
 import UIKit
-import FirebaseDatabase
+
+protocol LikeDislikeDelegate: class {
+    func didTapLikeDislike(cellTag: Int, senderTag: Int)
+}
 
 class FeedCell: UITableViewCell {
     
@@ -23,8 +26,13 @@ class FeedCell: UITableViewCell {
     
     @IBOutlet weak var lblDislikes: UILabel!
     
+    @IBOutlet weak var btnLikes: UIButton!
+    
+    @IBOutlet weak var btnDislikes: UIButton!
+    
     //MARK: Properties
     private var article: Article!
+    weak var delegate: LikeDislikeDelegate?
     
     
     //MARK: Methods
@@ -44,9 +52,21 @@ class FeedCell: UITableViewCell {
     
     func configureCell(article: Article){
         self.article = article
-        
+    
         lblArticleTitle.text = article.articleTitle
         lblArticleTxt.text = article.articleAbstract
+        
+        if article.likes == 1 {
+            lblLikes.text = "1 Like"
+        }else{
+            lblLikes.text = "\(article.likes) Likes"
+        }
+        
+        if article.dislikes == 1 {
+            lblDislikes.text = "1 Dislike"
+        }else{
+            lblDislikes.text = "\(article.dislikes) Dislikes"
+        }
         
         if let articleImg = article.articleImageURL {
             imgViewArticle.image =
@@ -56,29 +76,15 @@ class FeedCell: UITableViewCell {
         }
     }
     
-    @IBAction func btnThumbsUp(sender: UIButton) {
+    @IBAction func didLike(sender: UIButton) {
         
-        
+        delegate?.didTapLikeDislike(self.tag, senderTag: btnLikes.tag)
     }
     
-    @IBAction func btnThumbsDown(sender: UIButton) {
+    @IBAction func didDislike(sender: UIButton) {
         
-        
+        delegate?.didTapLikeDislike(self.tag, senderTag: btnDislikes.tag)
     }
     
-    private func postRatingsToFirebase(){
         
-        let post: [String:AnyObject] = [
-            "likes": 0,
-            "dislikes": 0]
-        
-        //connect with Firebase
-        let firebasePost = DataService.ds.REF_POSTS.childByAutoId()
-        firebasePost.setValue(post)
-        
-        DataService.ds.REF_USER_CURRENT.childByAppendingPath("posts").updateChildValues([firebasePost.key: "true"])
-        
-        
-    }
-    
 }

@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
-class FeedTVC: UITableViewController {
+class FeedTVC: UITableViewController, LikeDislikeDelegate {
     
     var articlesArray = [Article]()
     
@@ -32,6 +34,10 @@ class FeedTVC: UITableViewController {
             }
             
             self.articlesArray = articles
+            
+            //************!!!!!!*************
+            Article.getLikesDislikesFromFirebase(nil, articles: articles)
+            
             dispatch_async(dispatch_get_main_queue()){
                 self.tableView.reloadData()
             }
@@ -60,12 +66,10 @@ class FeedTVC: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return articlesArray.count
     }
     
@@ -78,7 +82,9 @@ class FeedTVC: UITableViewController {
      
         cell.configureCell(article)
         
+        cell.tag = indexPath.row
         
+        cell.delegate = self
         
         return cell
     }
@@ -93,6 +99,33 @@ class FeedTVC: UITableViewController {
         self.navigationController?.pushViewController(webVC, animated: true)
         
         
+    }
+    
+    func didTapLikeDislike(cellTag: Int, senderTag: Int) {
+        
+        let article = articlesArray[cellTag]
+        
+        if senderTag == 1 {
+            
+           article.adjustLikes(1)
+        }
+        
+        if senderTag == 2 {
+            
+            article.adjustLikes(2)
+        }
+        
+        let ratings: [String: AnyObject] = ["likes": article.likes, "dislikes": article.dislikes]
+        
+//        //connect with Firebase to add likes/dislikes to an article
+//        Article.ref.child("Articles").child(article.creationDate!).setValue(ratings)
+        Article.addLikesDislikesToFirebase(article, ratings: ratings)
+        
+        //load articles and their likes/dislikes from Firebase
+        Article.getLikesDislikesFromFirebase(article, articles: nil)
+        
+        //reload tableView
+        tableView.reloadData()
     }
     
     /*
