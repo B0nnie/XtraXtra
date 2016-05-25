@@ -21,9 +21,6 @@ class Article {
     private(set)var likes: Int = 0
     private(set)var dislikes: Int = 0
     
-    //Firebase reference
-    static let ref = FIRDatabase.database().reference()
-    
     init(articleDictionary: [String : AnyObject]) {
         
         self.articleTitle = articleDictionary["title"] as? String
@@ -68,66 +65,58 @@ class Article {
     
     class func getLikesDislikesFromFirebase(article: Article?, articles: [Article]?){
         
-        //task: make the likes/dislikes in the tableview match what's in firebase for articles already stored there
+        //make the likes/dislikes in the tableview match what's in Firebase for articles already stored there
         
-        //if the article.creationdate == a firebase article ID, then make the likes/dislikes label match the number of likes/dislikes stored in firebase
-        //cycle thru the array of firebase article IDs to find a match and if found, make the article.likes & article.dislikes equal the values found at "likes" and "dislikes" child nodes in firebase
-        
-        self.ref.child("Articles").observeEventType(.Value, withBlock: { snapshot in
+        GlobalConstants.ref.child("Articles").observeEventType(.Value, withBlock: { snapshot in
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                
-                // print("SNAPSHOTS: \(snapshots)")
+             
                 
                 for snap in snapshots {
-                    
-                    //print("SNAP: \(snap)")
-                    //print("SNAP.KEY \(snap.key)")
-                    // print("SNAP.VALUE \(snap.value)")
-                    
+                   
                     if let likesDislikesDict = snap.value as? [String:AnyObject]{
                         
                         if let dislikes = likesDislikesDict["dislikes"] as? Int, let likes = likesDislikesDict["likes"] as? Int {
                             
-                            if let fbArticleID = snap.key as? String {
-                               
-                                guard let articles = articles else {return}
+                            let fbArticleID = snap.key
+                            
+                            guard let articles = articles else {return}
+                            
+                            for article in articles {
                                 
-                                for article in articles {
+                                if fbArticleID == article.creationDate {
                                     
-                                    if fbArticleID == article.creationDate {
-                                        
-                                        article.likes = likes
-                                        article.dislikes = dislikes
-                                        
-                                    }
-                                    
-                                }
-                                
-                                if let articleID = article?.creationDate {
-                                    if fbArticleID == articleID {
-                                        
-                                        article?.likes = likes
-                                        article?.dislikes = dislikes
-                                    }
+                                    article.likes = likes
+                                    article.dislikes = dislikes
                                     
                                 }
                                 
                             }
+                            
+                            if let articleID = article?.creationDate {
+                                if fbArticleID == articleID {
+                                    
+                                    article?.likes = likes
+                                    article?.dislikes = dislikes
+                                }
+                                
+                            }
+                            
+                            
                         }
                     }
                     
                 }
                 
             }
-          
+            
         })
         
     }
     
     class func addLikesDislikesToFirebase(article:Article, ratings: [String:AnyObject]){
         //connect with Firebase to add likes/dislikes to an article
-        self.ref.child("Articles").child(article.creationDate!).setValue(ratings)
+        GlobalConstants.ref.child("Articles").child(article.creationDate!).setValue(ratings)
     }
     
 }

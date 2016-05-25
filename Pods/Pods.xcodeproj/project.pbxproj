@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		12CFF24E3488A1546DDA11BCA19DC684 /* Pods-XtraXtra-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 33337180E0C3EDA5AD0A3874A63E5DF9 /* Pods-XtraXtra-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9644552086065DDE39E3959435D40744 /* Pods-XtraXtra-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BAEB6069302523AD14700CF0218B98 /* Pods-XtraXtra-dummy.m */; };
-		D1D971053090199E058E202F5B9214C9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +19,6 @@
 		33337180E0C3EDA5AD0A3874A63E5DF9 /* Pods-XtraXtra-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-XtraXtra-umbrella.h"; sourceTree = "<group>"; };
 		33742C8D04B14DE607DC062468305295 /* Pods-XtraXtra.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-XtraXtra.modulemap"; sourceTree = "<group>"; };
 		36748D4A3884D6D0D738935E08F86B2B /* Pods-XtraXtra-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-XtraXtra-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		44BEA7B74DEDC35F34B43737E1458273 /* Pods-XtraXtra-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-XtraXtra-acknowledgements.plist"; sourceTree = "<group>"; };
 		7BDBAD55E1A2761466841D5CE7EB5F11 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		80E1FEE08C4658290AE56657FB4A719F /* Pods-XtraXtra-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-XtraXtra-resources.sh"; sourceTree = "<group>"; };
@@ -41,7 +39,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1D971053090199E058E202F5B9214C9 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,7 +220,6 @@
 		BF6342C8B29F4CEEA088EFF7AB4DE362 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";

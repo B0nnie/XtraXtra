@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 import Firebase
 
 @UIApplicationMain
@@ -18,7 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
         FIRApp.configure()
-        
+    
+        GlobalConstants.ref.child("Users").child(String(User.currentUser.userID)).child("userId").setValue(String(User.currentUser.userID))
+    
         return true
     }
 

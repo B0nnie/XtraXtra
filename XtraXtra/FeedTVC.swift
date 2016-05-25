@@ -17,32 +17,29 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        User.currentUser.loadUserLikedDislikedArticles(){
+            
+            NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
+                
+                guard let articles = articles else {
+                    //alertview
+                    print(error?.description)
+                    return
+                }
+                
+                self.articlesArray = articles
+                
+                Article.getLikesDislikesFromFirebase(nil, articles: articles)
+                
+                dispatch_async(dispatch_get_main_queue()){
+                    self.tableView.reloadData()
+                }
+                
+            }
+
+        }
         
         self.navigationController?.navigationBarHidden = true
-        
-        NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
-            
-            guard let articles = articles else {
-                //alertview
-                print(error?.description)
-                return
-            }
-            
-            self.articlesArray = articles
-            
-            //************!!!!!!*************
-            Article.getLikesDislikesFromFirebase(nil, articles: articles)
-            
-            dispatch_async(dispatch_get_main_queue()){
-                self.tableView.reloadData()
-            }
-            
-        }
         
     }
     
@@ -79,7 +76,7 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         let article = articlesArray[indexPath.row]
         
         let cell = tableView.dequeueReusableCellWithIdentifier("FeedCell") as! FeedCell
-     
+        
         cell.configureCell(article)
         
         cell.tag = indexPath.row
@@ -103,74 +100,87 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     
     func didTapLikeDislike(cellTag: Int, senderTag: Int) {
         
+        self.view.userInteractionEnabled = false
+        
         let article = articlesArray[cellTag]
         
-        if senderTag == 1 {
+        let (isArticleInArray, isArticleLiked) = checkIfArticleInLikesDislikesArray(article.creationDate!)
+        
+        if isArticleInArray == false {
             
-           article.adjustLikes(1)
+            var rating = String()
+            
+            if senderTag == 1 {
+                
+                article.adjustLikes(1)
+                rating = "true"
+            }
+            
+            if senderTag == 2 {
+                
+                article.adjustLikes(2)
+                rating = "false"
+            }
+            
+            let ratings: [String: AnyObject] = ["likes": article.likes, "dislikes": article.dislikes]
+            
+            
+            //connect with Firebase to add likes/dislikes to an article
+            Article.addLikesDislikesToFirebase(article, ratings: ratings)
+            
+            //load articles and their likes/dislikes from Firebase
+            Article.getLikesDislikesFromFirebase(article, articles: nil)
+            
+            
+            //store article that current user liked/disliked in Firebase
+            User.addUserLikesDisLikesToFirebase(article, rating: rating)
+            
+            //reload tableView
+            
+            
+        } else {
+            
         }
         
-        if senderTag == 2 {
+        User.currentUser.loadUserLikedDislikedArticles(){
             
-            article.adjustLikes(2)
+            dispatch_async(dispatch_get_main_queue()){
+                self.view.userInteractionEnabled = true
+                self.tableView.reloadData()
+
+            }
+        }
+       
+    }
+    
+    
+    func checkIfArticleInLikesDislikesArray(articleID: String) -> (Bool,String?) {
+        
+        let likedArticlesArray = User.currentUser.likedDislikedArray
+        
+        var isArticleInArray = false
+        var isTheArticleLiked: String? = nil
+        
+        for article in likedArticlesArray {
+            
+            let articleDict = article as [String:String]
+            
+            if articleID == articleDict["id"]{
+                
+                isArticleInArray = true
+                
+                if articleDict["liked"] == "true" {
+                    
+                    isTheArticleLiked = "true"
+                    
+                } else {
+                    isTheArticleLiked = "false"
+                }
+                
+            }
         }
         
-        let ratings: [String: AnyObject] = ["likes": article.likes, "dislikes": article.dislikes]
-        
-//        //connect with Firebase to add likes/dislikes to an article
-//        Article.ref.child("Articles").child(article.creationDate!).setValue(ratings)
-        Article.addLikesDislikesToFirebase(article, ratings: ratings)
-        
-        //load articles and their likes/dislikes from Firebase
-        Article.getLikesDislikesFromFirebase(article, articles: nil)
-        
-        //reload tableView
-        tableView.reloadData()
+        return (isArticleInArray, isTheArticleLiked)
     }
-    
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-    // Return false if you do not want the specified item to be editable.
-    return true
-    }
-    */
-    
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-    if editingStyle == .Delete {
-    // Delete the row from the data source
-    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-    } else if editingStyle == .Insert {
-    // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }
-    }
-    */
-    
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-    
-    }
-    */
-    
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-    // Return false if you do not want the item to be re-orderable.
-    return true
-    }
-    */
-    
-    /*
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-    }
-    */
-    
+   
 }

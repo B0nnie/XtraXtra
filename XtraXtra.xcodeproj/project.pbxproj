@@ -19,7 +19,8 @@
 		2947291C1CE3AA520021D0A2 /* NYTimesConstantsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2947291B1CE3AA520021D0A2 /* NYTimesConstantsKeys.swift */; };
 		2947291E1CE3ACA80021D0A2 /* NYTimesConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2947291D1CE3ACA80021D0A2 /* NYTimesConvenience.swift */; };
 		294729211CED0C960021D0A2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 294729201CED0C960021D0A2 /* GoogleService-Info.plist */; };
-		6B6C00BBA891B1450AA831BD /* Pods_XtraXtra.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B06934928CAB1A4C70E1C3 /* Pods_XtraXtra.framework */; };
+		29CAD11C1CF37BAC00C54E3F /* GlobalConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CAD11B1CF37BAC00C54E3F /* GlobalConstants.swift */; };
+		29CAD11E1CF37F1800C54E3F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CAD11D1CF37F1800C54E3F /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,8 +38,9 @@
 		2947291B1CE3AA520021D0A2 /* NYTimesConstantsKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NYTimesConstantsKeys.swift; sourceTree = "<group>"; };
 		2947291D1CE3ACA80021D0A2 /* NYTimesConvenience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NYTimesConvenience.swift; sourceTree = "<group>"; };
 		294729201CED0C960021D0A2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		29CAD11B1CF37BAC00C54E3F /* GlobalConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalConstants.swift; sourceTree = "<group>"; };
+		29CAD11D1CF37F1800C54E3F /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		51FC1CA46EC13986D4BDCFEA /* Pods-XtraXtra.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XtraXtra.debug.xcconfig"; path = "Pods/Target Support Files/Pods-XtraXtra/Pods-XtraXtra.debug.xcconfig"; sourceTree = "<group>"; };
-		B9B06934928CAB1A4C70E1C3 /* Pods_XtraXtra.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XtraXtra.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7BFEF6502C9E863BE398640 /* Pods-XtraXtra.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XtraXtra.release.xcconfig"; path = "Pods/Target Support Files/Pods-XtraXtra/Pods-XtraXtra.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -47,7 +49,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B6C00BBA891B1450AA831BD /* Pods_XtraXtra.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +79,7 @@
 				2947290E1CE3A1B20021D0A2 /* Model */,
 				2947290F1CE3A1C50021D0A2 /* View */,
 				294729101CE3A1CA0021D0A2 /* Controller */,
+				29CAD1181CF3781B00C54E3F /* Utilities */,
 				294728FC1CE3A17A0021D0A2 /* AppDelegate.swift */,
 				294729001CE3A17A0021D0A2 /* Main.storyboard */,
 				294729031CE3A17A0021D0A2 /* Assets.xcassets */,
@@ -91,6 +93,7 @@
 		2947290E1CE3A1B20021D0A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				29CAD11D1CF37F1800C54E3F /* User.swift */,
 				294729151CE3A24A0021D0A2 /* Article.swift */,
 				2947291F1CE3ACDE0021D0A2 /* NYTimes */,
 			);
@@ -124,6 +127,14 @@
 			name = NYTimes;
 			sourceTree = "<group>";
 		};
+		29CAD1181CF3781B00C54E3F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				29CAD11B1CF37BAC00C54E3F /* GlobalConstants.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
 		6D28C6281223BAA4F18F9815 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,7 +147,6 @@
 		E2E49E6B20EB05AF98AE40FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B9B06934928CAB1A4C70E1C3 /* Pods_XtraXtra.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -266,10 +276,12 @@
 			files = (
 				294728FD1CE3A17A0021D0A2 /* AppDelegate.swift in Sources */,
 				294729141CE3A2100021D0A2 /* NYTimesClient.swift in Sources */,
+				29CAD11C1CF37BAC00C54E3F /* GlobalConstants.swift in Sources */,
 				294729121CE3A1F50021D0A2 /* WebVC.swift in Sources */,
 				294729161CE3A24A0021D0A2 /* Article.swift in Sources */,
 				294729181CE3A4440021D0A2 /* FeedCell.swift in Sources */,
 				2947291E1CE3ACA80021D0A2 /* NYTimesConvenience.swift in Sources */,
+				29CAD11E1CF37F1800C54E3F /* User.swift in Sources */,
 				2947291C1CE3AA520021D0A2 /* NYTimesConstantsKeys.swift in Sources */,
 				2947291A1CE3A52F0021D0A2 /* FeedTVC.swift in Sources */,
 			);
