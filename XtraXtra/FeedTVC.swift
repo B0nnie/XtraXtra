@@ -21,11 +21,7 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         super.viewDidLoad()
         
         setTableViewBackgroundGradient(self)
-        
-        let background = CAGradientLayer().roseWaterColor()
-        background.frame = tableView.bounds
-        tableView.layer.insertSublayer(background, atIndex: 0)
-        
+                
         User.currentUser.loadUserLikedDislikedArticles(){
             
             NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
