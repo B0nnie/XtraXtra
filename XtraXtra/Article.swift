@@ -36,7 +36,7 @@ class Article {
             if multimediaArray.count > 0 {
                 let imageDictionary = multimediaArray[0]
                 self.articleImageURL = imageDictionary["url"] as? String
-            }
+            } 
             
         }
         

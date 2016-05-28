@@ -39,10 +39,10 @@ class FeedCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-      imgViewArticle.layer.cornerRadius = 5
+        imgViewArticle.layer.cornerRadius = 5
         
     }
-   
+    
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
@@ -52,27 +52,19 @@ class FeedCell: UITableViewCell {
     
     func configureCell(article: Article){
         self.article = article
-    
+        
         lblArticleTitle.text = article.articleTitle
         lblArticleTxt.text = article.articleAbstract
-        
-        if article.likes == 1 {
-            lblLikes.text = "1 Like"
-        }else{
-            lblLikes.text = "\(article.likes) Likes"
-        }
-        
-        if article.dislikes == 1 {
-            lblDislikes.text = "1 Dislike"
-        }else{
-            lblDislikes.text = "\(article.dislikes) Dislikes"
-        }
+        lblLikes.text = "\(article.likes)"
+        lblDislikes.text = "\(article.dislikes)"
         
         if let articleImg = article.articleImageURL {
             imgViewArticle.image =
                 NSURL(string: articleImg)
                     .flatMap { NSData(contentsOfURL: $0) }
                     .flatMap { UIImage(data: $0) }
+        } else {
+            imgViewArticle.image = UIImage(named:"nyt-t-logo")
         }
     }
     
@@ -86,5 +78,5 @@ class FeedCell: UITableViewCell {
         delegate?.didTapLikeDislike(self.tag, senderTag: btnDislikes.tag)
     }
     
-        
+    
 }

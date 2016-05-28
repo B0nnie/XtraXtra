@@ -14,8 +14,17 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     
     var articlesArray = [Article]()
     
+    var indicator = UIActivityIndicatorView()
+    var indicatorContainer = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setTableViewBackgroundGradient(self)
+        
+        let background = CAGradientLayer().roseWaterColor()
+        background.frame = tableView.bounds
+        tableView.layer.insertSublayer(background, atIndex: 0)
         
         User.currentUser.loadUserLikedDislikedArticles(){
             
@@ -32,6 +41,7 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
                 Article.getLikesDislikesFromFirebase(nil, articles: articles)
                 
                 dispatch_async(dispatch_get_main_queue()){
+                    self.indicatorContainer.hidden = true
                     self.tableView.reloadData()
                 }
                 
@@ -45,7 +55,16 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
+        indicatorContainerView()
+        activityIndicator()
         self.navigationController?.navigationBarHidden = true
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(true)
+        
+        indicatorContainerView()
+        activityIndicator()
     }
     
     
@@ -182,5 +201,30 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         
         return (isArticleInArray, isTheArticleLiked)
     }
+    
+    func indicatorContainerView(){
+        indicatorContainer.frame = tableView.frame
+        indicatorContainer.center = tableView.center
+        indicatorContainer.backgroundColor = UIColor.clearColor()
+        self.view.addSubview(indicatorContainer)
+    }
+    
+    func activityIndicator(){
+        indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 40, 40))
+        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        indicator.center = indicatorContainer.center
+        indicator.hidesWhenStopped = true
+        indicatorContainer.addSubview(indicator)
+        indicator.startAnimating()
+    }
+    
+    func setTableViewBackgroundGradient(sender: UITableViewController) {
+        let background = CAGradientLayer().roseWaterColor()
+        background.frame = sender.tableView.bounds
+        let backgroundView = UIView(frame: sender.tableView.bounds)
+        backgroundView.layer.insertSublayer(background, atIndex: 0)
+        sender.tableView.backgroundView = backgroundView
+    }
+    
    
 }

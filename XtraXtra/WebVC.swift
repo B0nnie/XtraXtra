@@ -12,6 +12,9 @@ class WebVC: UIViewController {
     
     
     @IBOutlet weak var webViewArticle: UIWebView!
+    
+    @IBOutlet weak var loader: UIActivityIndicatorView!
+    
     var URL: String?
 
     override func viewDidLoad() {
@@ -32,6 +35,16 @@ class WebVC: UIViewController {
         webViewArticle.loadRequest(request)
        
     }
+    
+    func webViewDidStartLoad(_: UIWebView){
+        loader.startAnimating()
+    }
+    
+    func webViewDidFinishLoad(_: UIWebView){
+        loader.stopAnimating()
+    }
+    
+    
     
 
     /*
