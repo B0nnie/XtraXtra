@@ -36,7 +36,7 @@ class Article {
             if multimediaArray.count > 0 {
                 let imageDictionary = multimediaArray[0]
                 self.articleImageURL = imageDictionary["url"] as? String
-            } 
+            }
             
         }
         
@@ -63,24 +63,26 @@ class Article {
         }
     }
     
-    class func getLikesDislikesFromFirebase(article: Article?, articles: [Article]?){
+    class func getLikesDislikesOfArticlesFromFirebase(article: Article?, articles: [Article]?, whenFinished: ()->()){
         
         //make the likes/dislikes in the tableview match what's in Firebase for articles already stored there
         
         GlobalConstants.ref.child("Articles").observeEventType(.Value, withBlock: { snapshot in
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
-             
+                
                 
                 for snap in snapshots {
-                   
+                    
                     if let likesDislikesDict = snap.value as? [String:AnyObject]{
                         
                         if let dislikes = likesDislikesDict["dislikes"] as? Int, let likes = likesDislikesDict["likes"] as? Int {
                             
                             let fbArticleID = snap.key
                             
-                            guard let articles = articles else {return}
+                            guard let articles = articles else {
+                                whenFinished()
+                                return}
                             
                             for article in articles {
                                 
@@ -109,14 +111,16 @@ class Article {
                 }
                 
             }
-            
+            whenFinished()
         })
         
     }
     
-    class func addLikesDislikesToFirebase(article:Article, ratings: [String:AnyObject]){
+    class func addLikesDislikesToFirebase(article:Article, ratings: [String:AnyObject], whenFinished:()->()){
         //connect with Firebase to add likes/dislikes to an article
-        GlobalConstants.ref.child("Articles").child(article.creationDate!).setValue(ratings)
+        GlobalConstants.ref.child("Articles").child(article.creationDate!).setValue(ratings) { (error, ref) -> Void in
+            whenFinished()
+        }
     }
     
 }

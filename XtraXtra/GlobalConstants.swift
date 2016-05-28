@@ -20,16 +20,19 @@ struct GlobalConstants {
     
     
     //MARK: Functions
+    
     //NSUserDefaults
     static func FUNC_STOREINUSERDEFAULTS(itemToStore: AnyObject, key: String){
         
         NSUserDefaults.standardUserDefaults().setValue(itemToStore, forKey: key)
     }
     
-    static func FUNC_RETRIEVEFROMUSERDEFAULTS(key: String) -> AnyObject {
+    static func FUNC_RETRIEVEFROMUSERDEFAULTS(key: String) -> AnyObject? {
         
-        return NSUserDefaults.standardUserDefaults().objectForKey(key)! 
+        guard let valueForKey = NSUserDefaults.standardUserDefaults().objectForKey(key) else {
+        return nil}
         
+        return valueForKey
     }
     
     //Alerts

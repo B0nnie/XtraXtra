@@ -39,7 +39,9 @@ class FeedCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        imgViewArticle.layer.cornerRadius = 5
+        imgViewArticle.layer.cornerRadius = 10
+        imgViewArticle.clipsToBounds = true
+        imgViewArticle.layer.masksToBounds = true
         
     }
     

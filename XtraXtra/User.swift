@@ -15,29 +15,41 @@ class User {
     
     static let currentUser = User()
     
-    //    private(set) var userID : NSUUID
-    private(set) var userID : String
-    
+    private(set) var userID : String!
+
     private(set) var likedDislikedArray = [[String:String]]()
     
     private var likedArticlesRef: FIRDatabaseReference! {
-        return GlobalConstants.ref.child("Users").child(String(User.currentUser.userID)).child("likedArticles")
+        return GlobalConstants.ref.child("Users").child(self.userID).child("likedArticles")
     }
     
     init() {
+        //MARK: Won't use in distribution
+        //if NSUUID is stored
+        if let userID = GlobalConstants.FUNC_RETRIEVEFROMUSERDEFAULTS("userID") as? String {
+            self.userID = userID
+        } else{
+            //if NSUUID isn't stored
+            
+            let id = UIDevice.currentDevice().identifierForVendor
+            
+            self.userID = String(id!)
+            GlobalConstants.ref.child("Users").child(self.userID).child("userId").setValue(self.userID)
+            
+            GlobalConstants.FUNC_STOREINUSERDEFAULTS(self.userID, key: "userID")
+            
+        }
         
-        //        let id = UIDevice.currentDevice().identifierForVendor
-        //
-        //        self.userID = id!
-        
-        self.userID = "<__NSConcreteUUID 0x15d34a00> 834C55BA-6AFC-4C16-834E-F58737666F52"
-        
-        print("USER ID is: \(userID)")
+       // print("USER ID is: \(userID)")
         
     }
     
-    class func addUserLikesDisLikesToFirebase(article:Article, rating: String) {
-        GlobalConstants.ref.child("Users").child(String(User.currentUser.userID)).child("likedArticles").child("\(article.creationDate!)").setValue(rating)
+    func addUserLikesDisLikesToFirebase(article:Article, rating: String, whenFinished:()->()) {
+
+        GlobalConstants.ref.child("Users").child(self.userID).child("likedArticles").child("\(article.creationDate!)").setValue(rating) { (error, ref) -> Void in
+            
+            whenFinished()
+        }
     }
     
     func loadUserLikedDislikedArticles(whenFinished: ()->()) {
@@ -64,7 +76,7 @@ class User {
             
             whenFinished()
         })
-       
+        
     }
     
 }

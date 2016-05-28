@@ -21,28 +21,36 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         super.viewDidLoad()
         
         setTableViewBackgroundGradient(self)
-                
-        User.currentUser.loadUserLikedDislikedArticles(){
+        
+        showActivityIndicator()
+        view.userInteractionEnabled = false
+        
+        NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
             
-            NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
-                
-                guard let articles = articles else {
-                    //alertview
-                    print(error?.description)
-                    return
-                }
-                
-                self.articlesArray = articles
-                
-                Article.getLikesDislikesFromFirebase(nil, articles: articles)
+            guard let articles = articles else {
+                //alertview
+                print(error?.description)
+                return
+            }
+            
+            self.articlesArray = articles
+            
+            //know the total number of likes/dislikes for each article pulled from NYT
+            Article.getLikesDislikesOfArticlesFromFirebase(nil, articles: articles){
                 
                 dispatch_async(dispatch_get_main_queue()){
-                    self.indicatorContainer.hidden = true
                     self.tableView.reloadData()
                 }
                 
+                //know which articles the current user liked/disliked so they can't keep liking/disliking the same articles mutiple times
+                User.currentUser.loadUserLikedDislikedArticles(){
+                    
+                    dispatch_async(dispatch_get_main_queue()){
+                        self.hideActivityIndicator()
+                        self.view.userInteractionEnabled = true
+                    }
+                }
             }
-
         }
         
         self.navigationController?.navigationBarHidden = true
@@ -51,21 +59,12 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
-        indicatorContainerView()
-        activityIndicator()
+        createIndicatorContainerView()
+        createActivityIndicator()
         self.navigationController?.navigationBarHidden = true
     }
     
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(true)
-        
-        indicatorContainerView()
-        activityIndicator()
-    }
-    
-    
-    override func viewWillDisappear(animated: Bool)
-    {
+    override func viewWillDisappear(animated: Bool){
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBarHidden = false
     }
@@ -108,21 +107,23 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         
         webVC.URL = article.articleURL
         
-        self.navigationController?.pushViewController(webVC, animated: true)
+        navigationController?.pushViewController(webVC, animated: true)
         
         
     }
     
     func didTapLikeDislike(cellTag: Int, senderTag: Int) {
-        
-        self.view.userInteractionEnabled = false
+        showActivityIndicator()
+        view.userInteractionEnabled = false
         
         let article = articlesArray[cellTag]
         
         let (isArticleInArray, isArticleLiked) = checkIfArticleInLikesDislikesArray(article.creationDate!)
         
+        //user hasn't liked or disliked the article she just tapped on
         if isArticleInArray == false {
             
+            print("NEW LIKE")
             var rating = String()
             
             if senderTag == 1 {
@@ -141,31 +142,47 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
             
             
             //connect with Firebase to add likes/dislikes to an article
-            Article.addLikesDislikesToFirebase(article, ratings: ratings)
-            
-            //load articles and their likes/dislikes from Firebase
-            Article.getLikesDislikesFromFirebase(article, articles: nil)
-            
-            
-            //store article that current user liked/disliked in Firebase
-            User.addUserLikesDisLikesToFirebase(article, rating: rating)
-            
-            //reload tableView
-            
-            
-        } else {
-            
-        }
-        
-        User.currentUser.loadUserLikedDislikedArticles(){
-            
-            dispatch_async(dispatch_get_main_queue()){
-                self.view.userInteractionEnabled = true
-                self.tableView.reloadData()
-
+            Article.addLikesDislikesToFirebase(article, ratings: ratings){
+              
+                //load articles and their likes/dislikes from Firebase
+                Article.getLikesDislikesOfArticlesFromFirebase(article, articles: nil) {
+                  
+                    //store article that current user liked/disliked in Firebase
+                    User.currentUser.addUserLikesDisLikesToFirebase(article, rating: rating){
+                        
+                        User.currentUser.loadUserLikedDislikedArticles(){
+                            
+                            dispatch_async(dispatch_get_main_queue()){
+                                self.tableView.reloadData()
+                                self.hideActivityIndicator()
+                                self.view.userInteractionEnabled = true
+                            }
+                        }
+                    }
+                }
             }
+        
+        } else {
+            /*user already liked or disliked the article*/
+            
+            //check to see if it's 'liked'/true or 'disliked'/false
+            
+            //if it's liked/true then subtract from dislikes
+            
+            //if it's disliked/false then subtract from the likes
+            
+            
+            
+            //if user clicks on like and it's already liked, then show alertView letting user know she already liked the article
+            
+            //if user clicks on dislike and it's already disliked, then show alertView letting user know she already disliked the article
+            
+            
+            hideActivityIndicator()
+            view.userInteractionEnabled = true
         }
        
+        
     }
     
     
@@ -198,20 +215,30 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         return (isArticleInArray, isTheArticleLiked)
     }
     
-    func indicatorContainerView(){
+    func createIndicatorContainerView(){
         indicatorContainer.frame = tableView.frame
         indicatorContainer.center = tableView.center
         indicatorContainer.backgroundColor = UIColor.clearColor()
         self.view.addSubview(indicatorContainer)
     }
     
-    func activityIndicator(){
+    func createActivityIndicator(){
         indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 40, 40))
         indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
         indicator.center = indicatorContainer.center
         indicator.hidesWhenStopped = true
         indicatorContainer.addSubview(indicator)
         indicator.startAnimating()
+    }
+    
+    func showActivityIndicator(){
+        indicatorContainer.hidden = false
+        indicator.startAnimating()
+    }
+    
+    func hideActivityIndicator(){
+        indicator.stopAnimating()
+        indicatorContainer.hidden = true
     }
     
     func setTableViewBackgroundGradient(sender: UITableViewController) {
@@ -222,5 +249,5 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         sender.tableView.backgroundView = backgroundView
     }
     
-   
+    
 }

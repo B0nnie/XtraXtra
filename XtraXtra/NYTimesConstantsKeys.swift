@@ -14,11 +14,11 @@ extension NYTimesClient {
     struct Constants {
         
         // MARK: API Key
-        static let ApiKey : String = "d3724b23699d4e019f829ada16dcb434"
+        static let ApiKey = "d3724b23699d4e019f829ada16dcb434"
         
         // MARK: URLs
         static let DocumentationUrl = "http://developer.nytimes.com/top_stories_v2.json#/README"
-        static let BaseURL : String = "http://api.nytimes.com/svc"
+        static let BaseURL = "http://api.nytimes.com/svc"
     }
     
     struct Methods {
