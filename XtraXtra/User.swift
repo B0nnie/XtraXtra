@@ -44,9 +44,9 @@ class User {
         
     }
     
-    func addUserLikesDisLikesToFirebase(article:Article, rating: String, whenFinished:()->()) {
+    func addUserLikesDisLikesToFirebase(article:Article, rating: Bool, whenFinished:()->()) {
 
-        GlobalConstants.ref.child("Users").child(self.userID).child("likedArticles").child("\(article.creationDate!)").setValue(rating) { (error, ref) -> Void in
+        GlobalConstants.ref.child("Users").child(self.userID).child("likedArticles").child("\(article.creationDate!)").setValue(String(rating)) { (error, ref) -> Void in
             
             whenFinished()
         }
@@ -54,6 +54,7 @@ class User {
     
     func loadUserLikedDislikedArticles(whenFinished: ()->()) {
         
+        self.likedDislikedArray.removeAll()
         likedArticlesRef.observeEventType(.Value, withBlock: { snapshot in
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {

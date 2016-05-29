@@ -53,7 +53,7 @@ class Article {
         return articles
     }
     
-    func adjustLikes(senderTag: Int){
+    func increaseLikesDislikes(senderTag: Int){
         if senderTag == 1 {
             self.likes += 1
         }
@@ -61,6 +61,19 @@ class Article {
         if senderTag == 2 {
             self.dislikes += 1
         }
+    }
+    
+    func decreaseLikesDislikes(senderTag: Int){
+        if senderTag == 1 {
+            self.likes = likes + 1
+            self.dislikes = dislikes - 1
+        }
+        
+        if senderTag == 2 {
+            self.likes = likes - 1
+            self.dislikes = dislikes + 1
+        }
+        
     }
     
     class func getLikesDislikesOfArticlesFromFirebase(article: Article?, articles: [Article]?, whenFinished: ()->()){

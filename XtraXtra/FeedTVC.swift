@@ -17,6 +17,8 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     var indicator = UIActivityIndicatorView()
     var indicatorContainer = UIView()
     
+    var isLikingDislikingArticle = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -113,6 +115,12 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
     }
     
     func didTapLikeDislike(cellTag: Int, senderTag: Int) {
+        
+        if isLikingDislikingArticle == true {
+            return
+        }
+        
+        isLikingDislikingArticle = true
         showActivityIndicator()
         view.userInteractionEnabled = false
         
@@ -120,26 +128,31 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         
         let (isArticleInArray, isArticleLiked) = checkIfArticleInLikesDislikesArray(article.creationDate!)
         
-        //user hasn't liked or disliked the article she just tapped on
+        var rating = Bool()
+        
+        var ratings: [String: AnyObject] = [:]
+        
+        /*user hasn't liked or disliked the article she just tapped on*/
         if isArticleInArray == false {
             
             print("NEW LIKE")
-            var rating = String()
             
             if senderTag == 1 {
                 
-                article.adjustLikes(1)
-                rating = "true"
+                article.increaseLikesDislikes(1)
+                rating = true
             }
             
             if senderTag == 2 {
                 
-                article.adjustLikes(2)
-                rating = "false"
+                article.increaseLikesDislikes(2)
+                rating = false
             }
             
-            let ratings: [String: AnyObject] = ["likes": article.likes, "dislikes": article.dislikes]
+            ratings = ["likes": article.likes, "dislikes": article.dislikes]
             
+//            showActivityIndicator()
+//            view.userInteractionEnabled = false
             
             //connect with Firebase to add likes/dislikes to an article
             Article.addLikesDislikesToFirebase(article, ratings: ratings){
@@ -153,9 +166,11 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
                         User.currentUser.loadUserLikedDislikedArticles(){
                             
                             dispatch_async(dispatch_get_main_queue()){
+                                
                                 self.tableView.reloadData()
                                 self.hideActivityIndicator()
                                 self.view.userInteractionEnabled = true
+                                self.isLikingDislikingArticle = false
                             }
                         }
                     }
@@ -165,33 +180,103 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         } else {
             /*user already liked or disliked the article*/
             
-            //check to see if it's 'liked'/true or 'disliked'/false
+            //if user clicks on 'like' and it's already disliked, then subtract from dislikes and add to likes
+            if senderTag == 1 && isArticleLiked == false {
+               //subtract from dislikes and add to likes
+                article.decreaseLikesDislikes(1)
+                
+                rating = true
+                
+                ratings = ["likes": article.likes, "dislikes": article.dislikes]
+                
+                
+                showActivityIndicator()
+                view.userInteractionEnabled = false
+                
+                //connect with Firebase to add likes/dislikes to an article
+                Article.addLikesDislikesToFirebase(article, ratings: ratings){
+                    
+                    //load articles and their likes/dislikes from Firebase
+                    Article.getLikesDislikesOfArticlesFromFirebase(article, articles: nil) {
+                        
+                        //store article that current user liked/disliked in Firebase with new rating
+                        User.currentUser.addUserLikesDisLikesToFirebase(article, rating: rating){
+                            
+                            User.currentUser.loadUserLikedDislikedArticles(){
+                                
+                                dispatch_async(dispatch_get_main_queue()){
+                                    self.isLikingDislikingArticle = false
+                                    self.tableView.reloadData()
+                                    self.hideActivityIndicator()
+                                    self.view.userInteractionEnabled = true
+                                }
+                            }
+                        }
+                    }
+                }
             
-            //if it's liked/true then subtract from dislikes
+            }
             
-            //if it's disliked/false then subtract from the likes
+            if senderTag == 2 && isArticleLiked == true {
+                 //if user clicks on dislike and it's already liked, then subtract from likes and add to dislikes
+                article.decreaseLikesDislikes(2)
+                
+                rating = false
+                
+                ratings = ["likes": article.likes, "dislikes": article.dislikes]
+                
+                showActivityIndicator()
+                view.userInteractionEnabled = false
+                
+                //connect with Firebase to add likes/dislikes to an article
+                Article.addLikesDislikesToFirebase(article, ratings: ratings){
+                    
+                    //load articles and their likes/dislikes from Firebase
+                    Article.getLikesDislikesOfArticlesFromFirebase(article, articles: nil) {
+                        
+                        //store article that current user liked/disliked in Firebase with new rating
+                        User.currentUser.addUserLikesDisLikesToFirebase(article, rating: rating){
+                            
+                            User.currentUser.loadUserLikedDislikedArticles(){
+                                
+                                dispatch_async(dispatch_get_main_queue()){
+                                    self.tableView.reloadData()
+                                    self.hideActivityIndicator()
+                                    self.view.userInteractionEnabled = true
+                                    self.isLikingDislikingArticle = false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             
+            if senderTag == 1 && isArticleLiked == true {
+                 //if user clicks on like (if senderTag == 1) and it's already liked (isArticleLiked returned true), then show alertView letting user know she already liked the article
+                
+                self.isLikingDislikingArticle = false
+                self.hideActivityIndicator()
+                self.view.userInteractionEnabled = true
+                GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already liked this article", vc: self)
+            }
             
-            
-            //if user clicks on like and it's already liked, then show alertView letting user know she already liked the article
-            
-            //if user clicks on dislike and it's already disliked, then show alertView letting user know she already disliked the article
-            
-            
-            hideActivityIndicator()
-            view.userInteractionEnabled = true
+            if senderTag == 2 && isArticleLiked == false {
+                //if user clicks on dislike (if senderTag == 2) and it's already disliked (isArticleLiked returned false), then show alertView letting user know she already disliked the article
+                self.isLikingDislikingArticle = false
+                self.hideActivityIndicator()
+                self.view.userInteractionEnabled = true
+               GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already disliked this article", vc: self)
+            }
         }
-       
-        
     }
     
     
-    func checkIfArticleInLikesDislikesArray(articleID: String) -> (Bool,String?) {
+    func checkIfArticleInLikesDislikesArray(articleID: String) -> (Bool,Bool) {
         
         let likedArticlesArray = User.currentUser.likedDislikedArray
         
         var isArticleInArray = false
-        var isTheArticleLiked: String? = nil
+        var isTheArticleLiked = false
         
         for article in likedArticlesArray {
             
@@ -203,10 +288,10 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
                 
                 if articleDict["liked"] == "true" {
                     
-                    isTheArticleLiked = "true"
+                    isTheArticleLiked = true
                     
                 } else {
-                    isTheArticleLiked = "false"
+                    isTheArticleLiked = false
                 }
                 
             }
