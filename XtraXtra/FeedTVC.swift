@@ -144,7 +144,6 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
             
             //if user clicks on 'like' and it's already disliked, then subtract from dislikes and add to likes
             if senderTag == 1 && isArticleLiked == false {
-               //subtract from dislikes and add to likes
                 article.decreaseLikesDislikes(1)
                 
                 liked = true
@@ -170,7 +169,7 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
             }
             
             if senderTag == 2 && isArticleLiked == false {
-                //if user clicks on dislike (if senderTag == 2) and it's already disliked (isArticleLiked returned false), then show alertView letting user know she already disliked the article
+                //if user clicks on dislike and it's already disliked, then show alertView letting user know she already disliked the article
                GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already disliked this article", vc: self)
                 return
             }
