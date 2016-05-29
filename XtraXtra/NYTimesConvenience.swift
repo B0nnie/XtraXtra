@@ -20,7 +20,7 @@ extension NYTimesClient {
         
         taskForGETMethod(finalMethod!, parameters: parameters) { (parsedJSONResult, error) -> Void in
             
-            print(parsedJSONResult)
+           // print(parsedJSONResult)
             
             if let error = error {
                 whenFinished(articles: nil, error: error)

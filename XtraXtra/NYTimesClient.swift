@@ -40,7 +40,7 @@ class NYTimesClient: NSObject {
         /* 2/3. Build the URL and configure the request */
         let urlString = Constants.BaseURL + method + NYTimesClient.escapedParameters(mutableParameters)
         
-        print(urlString)
+        //print(urlString)
         
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)

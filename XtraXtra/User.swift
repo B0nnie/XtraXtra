@@ -59,7 +59,7 @@ class User {
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
                 
-                print("SNAPSHOTS: \(snapshots)")
+               // print("SNAPSHOTS: \(snapshots)")
                 
                 for snap in snapshots {
                     
@@ -72,7 +72,7 @@ class User {
                     
                 }
                 
-                print("LIKED DISLIKED ARRAY: \(self.likedDislikedArray)")
+               // print("LIKED DISLIKED ARRAY: \(self.likedDislikedArray)")
             }
             
             whenFinished()

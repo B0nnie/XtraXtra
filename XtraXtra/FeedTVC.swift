@@ -24,7 +24,6 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         
         showActivityIndicator()
         view.userInteractionEnabled = false
-        tableView.allowsSelection = false
         
         NYTimesClient.sharedInstance.getTopStories{ (articles, error) -> () in
             
@@ -49,7 +48,6 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
                     dispatch_async(dispatch_get_main_queue()){
                         self.hideActivityIndicator()
                         self.view.userInteractionEnabled = true
-                        self.tableView.allowsSelection = false
                     }
                 }
             }
@@ -114,54 +112,33 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
         
     }
     
-    func didTapLikeDislike(cellTag: Int, senderTag: Int, cell: UITableViewCell) {
-      
-        showActivityIndicator()
-        view.userInteractionEnabled = false
-        tableView.allowsSelection = false
-        cell.userInteractionEnabled = false
+    func didTapLikeDislike(cellTag: Int, senderTag: Int) {
         
         let article = articlesArray[cellTag]
         
         let (isArticleInArray, isArticleLiked) = checkIfArticleInLikesDislikesArray(article.creationDate!)
         
-        var userRating = Bool()
+        var liked = Bool()
         
-        var articleRatings: [String: AnyObject] = [:]
+        var likedDislikedDict: [String: AnyObject] = [:]
         
         /*user hasn't liked or disliked the article she just tapped on*/
         if isArticleInArray == false {
             
-            print("NEW LIKE")
-            
             if senderTag == 1 {
                 
                 article.increaseLikesDislikes(1)
-                userRating = true
+                liked = true
             }
             
             if senderTag == 2 {
                 
                 article.increaseLikesDislikes(2)
-                userRating = false
+                liked = false
             }
             
-            articleRatings = ["likes": article.likes, "dislikes": article.dislikes]
-            
-//            showActivityIndicator()
-//            view.userInteractionEnabled = false
-            
-            sendReceiveFirebaseUpdates(article, articleRatings: articleRatings, userRating: userRating){
-                dispatch_async(dispatch_get_main_queue()){
-                    self.tableView.reloadData()
-                    self.hideActivityIndicator()
-                    self.view.userInteractionEnabled = true
-                    self.tableView.allowsSelection = true
-                    cell.userInteractionEnabled = true
-                    GlobalConstants.FUNC_SHOWALERT("", msg: "Thanks for rating!", vc: self)
-                }
-            }
-        
+            likedDislikedDict = ["likes": article.likes, "dislikes": article.dislikes]
+                    
         } else {
             /*user already liked or disliked the article*/
             
@@ -170,72 +147,44 @@ class FeedTVC: UITableViewController, LikeDislikeDelegate {
                //subtract from dislikes and add to likes
                 article.decreaseLikesDislikes(1)
                 
-                userRating = true
+                liked = true
                 
-                articleRatings = ["likes": article.likes, "dislikes": article.dislikes]
-                
-                
-                showActivityIndicator()
-                view.userInteractionEnabled = false
-                tableView.allowsSelection = false
-                cell.userInteractionEnabled = false
-                
-                sendReceiveFirebaseUpdates(article, articleRatings: articleRatings, userRating: userRating){
-                    dispatch_async(dispatch_get_main_queue()){
-                        self.tableView.reloadData()
-                        self.hideActivityIndicator()
-                        self.view.userInteractionEnabled = true
-                        self.tableView.allowsSelection = true
-                        cell.userInteractionEnabled = true
-                        GlobalConstants.FUNC_SHOWALERT("", msg: "Thanks for rating!", vc: self)
-                    }
-                }
-
+                likedDislikedDict = ["likes": article.likes, "dislikes": article.dislikes]
+        
             }
             
             if senderTag == 2 && isArticleLiked == true {
                  //if user clicks on dislike and it's already liked, then subtract from likes and add to dislikes
                 article.decreaseLikesDislikes(2)
                 
-               userRating = false
+                liked = false
                 
-                articleRatings = ["likes": article.likes, "dislikes": article.dislikes]
-                
-                showActivityIndicator()
-                view.userInteractionEnabled = false
-                tableView.allowsSelection = false
-                cell.userInteractionEnabled = false
-                
-                sendReceiveFirebaseUpdates(article, articleRatings: articleRatings, userRating: userRating){
-                    dispatch_async(dispatch_get_main_queue()){
-                        self.tableView.reloadData()
-                        self.hideActivityIndicator()
-                        self.view.userInteractionEnabled = true
-                        self.tableView.allowsSelection = true
-                        cell.userInteractionEnabled = true
-                        GlobalConstants.FUNC_SHOWALERT("", msg: "Thanks for rating!", vc: self)
-                    }
-
-                }
-
+                likedDislikedDict = ["likes": article.likes, "dislikes": article.dislikes]
+              
             }
             
             if senderTag == 1 && isArticleLiked == true {
                  //if user clicks on like and it's already liked, then show alertView letting user know she already liked the article
-                self.hideActivityIndicator()
-                self.view.userInteractionEnabled = true
-                self.tableView.allowsSelection = true
-                cell.userInteractionEnabled = true
                 GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already liked this article", vc: self)
+                return
             }
             
             if senderTag == 2 && isArticleLiked == false {
                 //if user clicks on dislike (if senderTag == 2) and it's already disliked (isArticleLiked returned false), then show alertView letting user know she already disliked the article
+               GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already disliked this article", vc: self)
+                return
+            }
+        }
+        
+        showActivityIndicator()
+        view.userInteractionEnabled = false
+        
+        sendReceiveFirebaseUpdates(article, articleRatings: likedDislikedDict, userRating: liked){
+            dispatch_async(dispatch_get_main_queue()){
+                self.tableView.reloadData()
                 self.hideActivityIndicator()
                 self.view.userInteractionEnabled = true
-                self.tableView.allowsSelection = true
-                cell.userInteractionEnabled = true
-               GlobalConstants.FUNC_SHOWALERT("Error", msg: "You already disliked this article", vc: self)
+                GlobalConstants.FUNC_SHOWALERT("", msg: "Thanks for rating!", vc: self)
             }
         }
     }
