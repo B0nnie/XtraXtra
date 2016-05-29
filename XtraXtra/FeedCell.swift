@@ -10,7 +10,7 @@
 import UIKit
 
 protocol LikeDislikeDelegate: class {
-    func didTapLikeDislike(cellTag: Int, senderTag: Int)
+    func didTapLikeDislike(cellTag: Int, senderTag: Int, cell: UITableViewCell)
 }
 
 class FeedCell: UITableViewCell {
@@ -71,13 +71,13 @@ class FeedCell: UITableViewCell {
     }
     
     @IBAction func didLike(sender: UIButton) {
-        
-        delegate?.didTapLikeDislike(self.tag, senderTag: btnLikes.tag)
+        self.userInteractionEnabled = false
+        delegate?.didTapLikeDislike(self.tag, senderTag: btnLikes.tag, cell: self)
     }
     
     @IBAction func didDislike(sender: UIButton) {
-        
-        delegate?.didTapLikeDislike(self.tag, senderTag: btnDislikes.tag)
+        self.userInteractionEnabled = false
+        delegate?.didTapLikeDislike(self.tag, senderTag: btnDislikes.tag, cell: self)
     }
     
     

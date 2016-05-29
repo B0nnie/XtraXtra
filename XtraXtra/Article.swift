@@ -66,12 +66,17 @@ class Article {
     func decreaseLikesDislikes(senderTag: Int){
         if senderTag == 1 {
             self.likes = likes + 1
-            self.dislikes = dislikes - 1
+            if dislikes > 0 {
+              self.dislikes = dislikes - 1
+            }
+            
         }
         
         if senderTag == 2 {
-            self.likes = likes - 1
             self.dislikes = dislikes + 1
+            if likes > 0 {
+             self.likes = likes - 1
+            }
         }
         
     }
@@ -80,7 +85,7 @@ class Article {
         
         //make the likes/dislikes in the tableview match what's in Firebase for articles already stored there
         
-        GlobalConstants.ref.child("Articles").observeEventType(.Value, withBlock: { snapshot in
+        GlobalConstants.ref.child("Articles").observeSingleEventOfType(.Value, withBlock: { snapshot in
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
                 

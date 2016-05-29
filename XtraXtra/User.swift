@@ -55,7 +55,7 @@ class User {
     func loadUserLikedDislikedArticles(whenFinished: ()->()) {
         
         self.likedDislikedArray.removeAll()
-        likedArticlesRef.observeEventType(.Value, withBlock: { snapshot in
+        likedArticlesRef.observeSingleEventOfType(.Value, withBlock: { snapshot in
             
             if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
                 
